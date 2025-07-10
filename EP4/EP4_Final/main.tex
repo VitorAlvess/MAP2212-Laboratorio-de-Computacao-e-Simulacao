@@ -1,0 +1,227 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage[margin=2cm]{geometry}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+
+
+
+
+\title{Relatório - Exercício Programa 4 (EP4)}
+\author{José Victor Santos Alves \\ Nr. USP: 14713085 \\ Marcos Elias Jara Grubert\\ Nr. USP: 1295930}
+\date{Maio de 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+
+Este relatório apresenta a solução para o terceiro Exercício Programa (EP3) da disciplina MAP2212/2025 (Laboratório de Computação e Simulação) do Bacharelado em Matemática Aplicada e Computacional (BMAC) do IME-USP. \\
+O objetivo deste EP é estimar a função verdade definida por
+\begin{equation}
+    W(v)= \int_{T(v)} f(\theta\mid x,y)d\theta 
+\end{equation}
+através de uma função \textit{U(v)} obtida por integral condensada da massa de probabilidade de $f(\theta|x,y)$ no domínio \textit {T(v)} e que não ultrapassa um nível \textit{v} pré-estabelecido, ou seja,
+\begin{equation}
+    T(v)=\{ \theta  \in   \Theta  \mid f(\theta\mid x,y)\leq v\}
+\end{equation}
+A função \textit{f} é a função de densidade de probabilidade posterior de \textit{Dirichlet}, que representa um modelo estatístico m-dimensional multinomial, dado por:
+\begin{equation}
+    f(\theta\mid x,y) =  \frac{1}{B(x+y)}  \prod_{i=1}^m  \theta_i^{x_i+y_i-1} 
+\end{equation}
+onde \textit{x} e \textit{y} são vetores de observações a priori, $\theta$ é um vetor simplex de probabilidades, \textit{m} = 3 é a dimensão e \textit{B} representa a distribuição Beta. Observe que, 
+\begin{equation}
+    x,y \in   \aleph ^m,  \theta  \in  \Theta =S_m=\{ \theta  \in  \Re _m^+ \mid f(\theta\mid x,y)\leq v\}
+\end{equation}
+
+\section{Definindo o valor de \( n \)}
+
+Para a definição do valor de \( n \), utilizaremos uma abordagem baseada em distribuição Bernoulli para determinar a quantidade necessária de pontos em cada bin, de modo que o erro máximo tolerável seja respeitado, definido como \( \epsilon = 0.05\% \). A quantidade de bins, denotada por \( k \), deve ser tal que a resolução seja maior que o erro \( \epsilon \), ou seja, cada bin deve representar uma fração de probabilidade que respeite a desigualdade:
+
+\begin{equation}
+    W(v_j) - W(v_{j-1}) = \frac{1}{k} \geq \epsilon
+    \label{eqn:valork}
+\end{equation}
+
+\subsection{Aproximação Assintótica}
+
+Assumindo um número de amostras suficientemente grande, podemos utilizar o Teorema do Limite Central para aproximar a distribuição Bernoulli por uma Normal. Com isso, a probabilidade do erro relativo ser menor que \( \epsilon \) pode ser escrita como:
+
+\[
+P(|\hat{p} - p|\leq \varepsilon)\geq \gamma 
+\]
+
+Aplicando a normalização, temos:
+
+\[
+P(-\varepsilon \leq \hat{p} - p \leq \varepsilon) = P\left( \frac{-\sqrt{n}\varepsilon}{\sigma} \leq Z \leq \frac{\sqrt{n}\varepsilon}{\sigma}\right) \approx \gamma
+\]
+
+Dessa forma, podemos isolar \( n \) para obter:
+
+\begin{equation}
+    n = \frac {\sigma^2 {Z_\gamma}^2} {\varepsilon^2}
+    \label{eqn:valorn}
+\end{equation}
+
+O valor de \( n \) obtido em \ref{eqn:valorn} será utilizado para determinar a quantidade de amostras necessárias para atingir o erro relativo estipulado.
+
+\section{Determinação do valor de \( n \)}
+
+Para estabelecer o valor de \( n \), recorremos à aproximação assintótica da distribuição de Bernoulli, com o objetivo de calcular a quantidade mínima de amostras por bin necessárias para atingir a resolução desejada e limitar o erro relativo máximo a \( \varepsilon = 0{,}05\% \). O número de bins \( k \) deve ser suficientemente grande para que a resolução supere o valor do erro permitido, ou seja:
+
+\begin{equation}
+    W(v_j) - W(v_{j-1}) = \frac{1}{k} \geq \varepsilon
+    \label{eqn:valork}
+\end{equation}
+
+Assumindo que a amostragem é suficientemente extensa, o Teorema Central do Limite nos permite aproximar a distribuição Bernoulli por uma normal. Assim, a probabilidade de que o erro absoluto entre a proporção estimada \( \hat{p} \) e a real \( p \) seja menor ou igual a \( \varepsilon \) pode ser expressa como:
+
+\[
+P(|\hat{p} - p| \leq \varepsilon) \geq \gamma
+\] 
+
+O que equivale a:
+
+\[
+P\left(-\varepsilon \leq \hat{p} - p \leq \varepsilon\right) = P\left( \frac{-\sqrt{n}\varepsilon}{\sigma} \leq Z \leq \frac{\sqrt{n}\varepsilon}{\sigma} \right) \approx \gamma
+\]
+
+A partir dessa desigualdade, é possível isolar \( n \) como:
+
+\begin{equation}
+    n = \frac{\sigma^2 Z_\gamma^2}{\varepsilon^2}
+    \label{eqn:valorn}
+\end{equation}
+
+Esse valor será usado como referência para garantir a precisão da estimativa dentro dos limites de erro especificados.
+
+\subsection{Escolha de \( k \): número de bins}
+
+A quantidade de bins na distribuição de probabilidade discreta deve respeitar o critério de resolução mínima exigida por \( \varepsilon \), conforme a equação \ref{eqn:valork}, o que implica:
+
+\begin{equation}
+    k \geq \frac{1}{\varepsilon} \Rightarrow k \geq 2000
+    \label{eqn:valork}
+\end{equation}
+
+portanto:
+\[
+k_{\text{min}} = 2000
+\]
+
+
+\subsection{Intervalo de confiança adotado}
+
+Utilizamos um nível de confiança de 95\%, escolhido de forma convencional. Com isso, o valor crítico \( Z_\gamma \) da distribuição normal padrão \( N(0,1) \) corresponde a:
+
+\[
+Z_\gamma = 1{,}96
+\]
+
+\subsection{Precisão desejada (\( \varepsilon \))}
+
+O erro permitido entre o valor real de \( W(u) \) e sua aproximação foi fixado em:
+
+\[
+\varepsilon = 0{,}0005
+\]
+
+\subsection{Estimativa da variância}
+
+Considerando que, dentro de um bin, os dados seguem uma distribuição de Bernoulli com probabilidade igual à largura do bin (i.e., \( \varepsilon \)), a variância pode ser estimada como:
+
+\begin{equation}
+    \sigma^2 = \frac{\varepsilon}{2} \left(1 - \frac{\varepsilon}{2} \right) \approx \frac{\varepsilon}{2}
+    \label{eqn:valorsig}
+\end{equation}
+
+\subsection{Cálculo final de \( n \)}
+
+Com base nas equações \ref{eqn:valork}, \ref{eqn:valorn} e \ref{eqn:valorsig}, podemos determinar o valor necessário de \( n \) para garantir o erro máximo admissível, levando em conta a divisão em \( k = 2000 \) bins:
+
+\begin{equation*}
+    n = k \cdot \frac{1{,}96^2 \cdot \frac{\varepsilon}{2}}{\varepsilon^2} \geq 7.683.20
+\end{equation*}
+
+Portanto, o número mínimo de pontos necessário é:
+
+\[
+n_{\text{min}} = 7.683.200 \text{ pontos}
+\]
+
+
+\section{Implementação Computacional}
+
+A implementação foi realizada em Python, utilizando as bibliotecas NumPy para cálculos numéricos e SciPy para funções especiais. O código segue as etapas:
+
+\begin{enumerate}
+    \item Cálculo dos parâmetros $\alpha = x + y$ da distribuição Dirichlet
+    \item Geração de $n = 15.366.400$ amostras usando \texttt{np.random.dirichlet}
+    \item Cálculo da densidade $f(\theta|x,y)$ para cada amostra
+    \item Divisão em $k = 2000$ bins de igual probabilidade
+    \item Construção da função $U(v)$ por busca binária
+\end{enumerate}
+
+\subsection{Constante de Normalização}
+
+O valor calculado para a constante utilizando x = [4, 6, 4] e
+y = [1, 2, 3] foi:
+\[
+B(\alpha)^{-1} = \frac{\Gamma(\sum \alpha_i)}{\prod \Gamma(\alpha_i)} = 1396755360
+\]
+
+\section{Resultados e Análise}
+
+\subsection{Desempenho do Algoritmo}
+
+A implementação computacional demonstrou eficácia na aproximação da função verdade $W(v)$, conforme evidenciado pelos seguintes resultados:
+
+\begin{table}[H]
+\centering
+\caption{Desempenho numérico do estimador}
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Métrica} & \textbf{Valor} \\ \hline
+Amostras ($n$) & 7.683.200 \\
+Bins ($k$) & 2.000 \\
+Tempo de execução & 5.17 segundos \\ \hline
+
+\end{tabular}
+\label{tab:performance}
+\end{table}
+
+\subsection{Validação Estatística}
+
+A Figura \ref{fig:distribuicao} apresenta a distribuição cumulativa estimada $U(v)$, onde se observa o comportamento monotonicamente crescente esperado:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{grafico.png}
+\caption{Distribuição acumulada $U(v)$ obtida por condensação probabilística com x = [4, 6, 4] e
+y = [1, 2, 3]}
+\label{fig:distribuicao}
+\end{figure}
+
+
+
+\section{Conclusão}
+
+Podemos concluir que o método desenvolvido neste trabalho mostrou-se eficiente para estimar a função verdade $W(v)$. A abordagem utilizada, baseada em amostragem aleatória e agrupamento inteligente dos resultados, conseguiu aproximar os valores desejados com boa precisão. O gráfico gerado revela o comportamento esperado para a função acumulada, confirmando que a técnica funciona na prática. Apesar de lidar com um grande número de cálculos, o método manteve um desempenho computacional razoável, mostrando que é possível obter resultados confiáveis sem precisar de recursos excessivos. Esta solução representa uma alternativa interessante para problemas estatísticos desse tipo, combinando conceitos matemáticos com implementação prática de forma equilibrada.
+
+
+
+
+\end{document}
+\end{document}
